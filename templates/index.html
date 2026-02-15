@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Customer Segmentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --panel: #1E293B;
+      --card: #0F172A;
+      --accent: #06B6D4;
+      --accent-soft: #38BDF8;
+      --text: #F1F5F9;
+      --soft: #94A3B8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #0B1220;
+      color: var(--text);
+    }
+
+    .container {
+      width: 950px;
+      height: 560px;
+      display: flex;
+      border-radius: 24px;
+      overflow: hidden;
+      backdrop-filter: blur(25px);
+      background: rgba(15, 23, 42, 0.9);
+      box-shadow: 0 40px 120px rgba(0, 0, 0, 0.7);
+    }
+
+    .left {
+      flex: 1;
+      padding: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(160deg, #0F172A, #1E293B);
+    }
+
+    .left h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .left p {
+      font-size: 16px;
+      color: var(--soft);
+      line-height: 1.6;
+    }
+
+    .right {
+      flex: 1;
+      padding: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: rgba(30, 41, 59, 0.95);
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    label {
+      font-size: 14px;
+      color: var(--soft);
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 14px;
+      border: 1px solid #334155;
+      background: #0F172A;
+      color: var(--text);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 10px;
+      accent-color: var(--accent);
+    }
+
+    .score-value {
+      color: var(--accent-soft);
+      font-weight: bold;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    button {
+      flex: 1;
+      padding: 14px;
+      border-radius: 16px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .predict {
+      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+      color: white;
+    }
+
+    .reset {
+      background: #334155;
+      color: var(--text);
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 18px;
+      border-radius: 18px;
+      background: #0F172A;
+      border-left: 5px solid var(--accent);
+    }
+
+    .description {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--soft);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="left">
+      <h1>Customer Segmentation</h1>
+      <p>
+        Discover customer behavior patterns using clustering analysis.
+        Enter customer details to classify their segment.
+      </p>
+    </div>
+
+    <div class="right">
+
+      <form id="customerForm" action="/predict" method="post">
+
+        <!-- Age -->
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" name="age" value="{{ age }}" min="10" max="100" required>
+        </div>
+
+        <!-- Income -->
+        <div class="form-group">
+          <label>Annual Income (k$)</label>
+          <input type="number" name="income" value="{{ income }}" min="5" max="200" required>
+        </div>
+
+        <!-- Spending -->
+        <div class="form-group">
+          <label>
+            Spending Score:
+            <span class="score-value" id="scoreValue">{{ spending }}</span>
+          </label>
+
+          <input type="range" name="spending" min="0" max="100" value="{{ spending }}"
+            oninput="document.getElementById('scoreValue').innerText = this.value">
+        </div>
+
+        <div class="buttons">
+          <button type="submit" class="predict">Predict</button>
+          <button type="button" class="reset" onclick="clearForm()">Reset</button>
+        </div>
+
+      </form>
+
+      {% if result %}
+      <div class="result" id="resultBox">
+        <strong>Segment:</strong> {{ result }}
+        <div class="description">
+          {{ description }}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  <script>
+    function clearForm() {
+
+      // Clear input fields
+      document.querySelector('input[name="age"]').value = "";
+      document.querySelector('input[name="income"]').value = "";
+      document.querySelector('input[name="spending"]').value = 0;
+
+      // Reset slider text
+      document.getElementById("scoreValue").innerText = 0;
+
+      // Remove result box
+      const resultBox = document.getElementById("resultBox");
+      if (resultBox) resultBox.remove();
+    }
+  </script>
+
+</body>
+
+</html>
